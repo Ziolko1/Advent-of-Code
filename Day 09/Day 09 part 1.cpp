@@ -5,7 +5,7 @@
 int main()
 {
     std::vector<uint_least64_t>  noList;
-    std::ifstream inputFile("Day 9 Input.txt");
+    std::ifstream inputFile("Day 9 input.txt");
     if(inputFile.is_open())
     {
         uint_least64_t no;
