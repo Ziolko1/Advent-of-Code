@@ -65,7 +65,7 @@ int_least64_t evaluate(std::string& checking, myMap& dataSet)
 int main()
 {
     myMap dataSet;
-    std::ifstream inputFile ("BAGS.txt");
+    std::ifstream inputFile ("Day 07 input.txt");
     if(inputFile.is_open())
     {
         std::string s;
