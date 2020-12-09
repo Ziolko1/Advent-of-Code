@@ -7,9 +7,7 @@ int main()
 {
     std::vector <int> Numbers;
     Numbers.reserve(200);
-
-    std::ifstream inputFile;
-    inputFile.open ("Numbers.txt");
+    std::ifstream inputFile ("Day 1 input.txt");
     if(inputFile.is_open())
     {
         int buffer{0};
