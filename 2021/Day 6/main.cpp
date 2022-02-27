@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-using TYPE2 = uint64_t;
+using TYPE = uint64_t;
 
 template <typename T>
 void printVector (const std::vector<T>& data)
@@ -15,11 +15,11 @@ void printVector (const std::vector<T>& data)
     std::cout << '\n';
 }
 
-std::vector<TYPE2> parsedInput (std::string filename)
+std::vector<TYPE> parsedInput (std::string filename)
 {
     int buffer;
     char garbage;
-    std::vector<TYPE2> output (10, 0);
+    std::vector<TYPE> output (10, 0);
     std::ifstream input (filename);
     while (input >> buffer)
     {
@@ -30,9 +30,9 @@ std::vector<TYPE2> parsedInput (std::string filename)
     return output;
 }
 
-void progressADay(std::vector<TYPE2>& data)
+void progressADay(std::vector<TYPE>& data)
 {
-    TYPE2 buffer = data.at(0);
+    TYPE buffer = data.at(0);
     for (int i{0}; i<8; ++i)
     {
         data.at(i) = data.at(i+1);
@@ -40,17 +40,17 @@ void progressADay(std::vector<TYPE2>& data)
     data.at(8) = buffer;
     data.at(6) += buffer;
 }
-TYPE2 countFish(const std::vector<TYPE2>& data)
+TYPE countFish(const std::vector<TYPE>& data)
 {
-    TYPE2 sum{0};
-    for (const TYPE2& entry : data)
+    TYPE sum{0};
+    for (const TYPE& entry : data)
     {
         sum+= entry;
     }
     return sum;
 }
 
-TYPE2 task (std::vector<TYPE2> data, int days)
+TYPE task (std::vector<TYPE> data, int days)
 {
     for (int i{0}; i<days; ++i)
         progressADay(data);
@@ -58,7 +58,7 @@ TYPE2 task (std::vector<TYPE2> data, int days)
 }
 int main()
 {
-    std::vector<TYPE2> v(parsedInput("input.txt"));
+    std::vector<TYPE> v(parsedInput("input.txt"));
     std::cout << "Answer to 1. half: " << task(v, 80) << '\n';
     std::cout << "Answer to 2. half: " << task(v, 256) << '\n';
     return 0;
