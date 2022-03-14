@@ -11,13 +11,7 @@
 // Six segments     -> 0, 6, 9
 // Seven segments   -> 8
 // There is no data set without digits 1, 4, 7 or 8
-/* defabc gcb dbafcg gc gcbed fbecgd begfdac fcbde cfge debag
-    cg      -> 1                 => upper right and lower right
-    gcb     -> 7, - gc    -> b   => b is the top part of the display
-    cfge    -> 4, - gc    -> fe  => upper left, and middle pieces
-    begfdac -> 8, - cfgeb -> ad  => lower left and down pieces
 
-*/
 class LineOfData
 {
     std::vector <std::string> m_left;
@@ -32,22 +26,8 @@ public:
     {
         return m_right;
     }
-    friend std::ostream& operator<< (std::ostream& out, const LineOfData& lod);
 };
 
-std::ostream& operator<< (std::ostream& out, const LineOfData& lod)
-{
-    for (const std::string& data : lod.getLeft())
-    {
-        out << data << ' ';
-    }
-    out << "| ";
-    for (const std::string& data : lod.getRight())
-    {
-        out << data << ' ';
-    }
-    return out;
-}
 std::vector<LineOfData> parsedInput (std::string filename)
 {
     char garbage;
