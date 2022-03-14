@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <algorithm>    //Sort
 // Seven segment display:
 // Two segments     -> 1
 // Three segments   -> 7
@@ -9,6 +10,7 @@
 // Five segments    -> 2, 3, 5
 // Six segments     -> 0, 6, 9
 // Seven segments   -> 8
+// There is no data set without digits 1, 4, 7 or 8
 /* defabc gcb dbafcg gc gcbed fbecgd begfdac fcbde cfge debag
     cg      -> 1                 => upper right and lower right
     gcb     -> 7, - gc    -> b   => b is the top part of the display
@@ -61,12 +63,14 @@ std::vector<LineOfData> parsedInput (std::string filename)
         for (int i{0}; i<10; ++i)
         {
             input >> buffer;
+            std::sort(buffer.begin(), buffer.end());
             l.push_back(buffer);
         }
         input >> garbage;
         for (int i{0}; i<4; ++i)
         {
             input >> buffer;
+            std::sort(buffer.begin(), buffer.end());
             r.push_back(buffer);
         }
         output.emplace_back(l,r);
@@ -95,37 +99,140 @@ int32_t task1 (const std::vector<LineOfData>& data)
     }
     return answer;
 }
-int32_t task2 (const std::vector<LineOfData>& data)
+std::string intersection(const std::string& a, const std::string& b)
 {
-    int32_t answer;
+    std::string out;
+    for (const char letter_a : a)
+    {
+        for (const char letter_b : b)
+        {
+            if (letter_a == letter_b)
+            {
+                out += letter_a;
+                break;
+            }
+        }
+    }
+    return out;
+}
+
+std::vector <std::string> formatData(const LineOfData& lod)
+{
+    std::vector<std::string> workdata;
+    for (const std::string& x : lod.getLeft())
+        workdata.emplace_back(x);
+    for (const std::string& x : lod.getRight())
+        workdata.emplace_back(x);
+    return workdata;
+}
+
+std::vector<std::string> decipherData (const std::vector<std::string>& data)
+{
+    std::string zero, one, two, three, four, five, six, seven, eight, nine;
+    std::vector<std::string> two_three_five;
+    std::vector<std::string> zero_six_nine;
+    for (const std::string& x : data)
+    {
+        switch (x.size())
+        {
+        case 2:
+            one = x; break;
+        case 3:
+            seven = x; break;
+        case 4:
+            four = x; break;
+        case 5:
+            two_three_five.emplace_back(x); break;
+        case 6:
+            zero_six_nine.emplace_back(x); break;
+        case 7:
+            eight = x; break;
+        }
+    }
+    for (const std::string& x : two_three_five)
+    {
+        if (intersection(x, one).size() == 2)
+        {
+             three = x;
+             break;
+        }
+    }
+    for (const std::string& x : zero_six_nine)
+    {
+        if (intersection(x, four).size() == 4)
+        {
+            nine = x;
+            break;
+        }
+    }
+    for (const std::string& x : two_three_five)
+    {
+        if (intersection(x, nine).size() == 4)
+        {
+             two = x;
+             break;
+        }
+    }
+    for (const std::string& x : two_three_five)
+    {
+        if ((intersection(x, two).size() == 3) && (intersection(x, three).size() == 4))
+        {
+             five = x;
+             break;
+        }
+    }
+    for (const std::string& x : zero_six_nine)
+    {
+        if ((intersection(x, one).size() == 2) && (intersection(x, nine).size() == 5))
+        {
+             zero = x;
+             break;
+        }
+    }
+    for (const std::string& x : zero_six_nine)
+    {
+        if ((intersection(x, zero).size() == 5) && (intersection(x, nine).size() == 5))
+        {
+             six = x;
+             break;
+        }
+    }
+    return {zero, one, two, three, four, five, six, seven, eight, nine};
+}
+
+int32_t evaluateLine (const LineOfData& lod)
+{
+    int32_t answer{0};
+    std::vector<std::string> workdata {formatData(lod)};
+    std::vector<std::string> decipheredData {decipherData(workdata)};
+
+    for (const std::string& digit : lod.getRight())
+    {
+        answer*=10;
+        for (int i{0}; i<10; ++i)
+        {
+            if (digit == decipheredData.at(i))
+            {
+                answer+=i;
+                break;
+            }
+        }
+    }
     return answer;
 }
-void analyzeData (const std::vector<LineOfData>& data)
+int32_t task2 (const std::vector<LineOfData>& data)
 {
-    for (int i{0}; i<data.size(); ++i)
+    int32_t answer{0};
+    for (const LineOfData& l : data)
     {
-        std::vector<int32_t> d (10, 0);
-        for (int j{0}; j<data.at(i).getLeft().size(); ++j)
-        {
-            ++d.at(data.at(i).getLeft().at(j).size());
-        }
-        for (int j{0}; j<data.at(i).getRight().size(); ++j)
-        {
-            ++d.at(data.at(i).getRight().at(j).size());
-        }
-        for (int j{2}; j<8; ++j)
-        {
-            if (!d.at(j))
-                std::cout << i << ' ' << j << ':' << d.at(j) << '\n';
-
-        }
-
+        answer+=evaluateLine(l);
     }
+    return answer;
 }
+
 int main()
 {
     std::vector<LineOfData> v(parsedInput("input.txt"));
-    analyzeData(v);
     std::cout << "Answer to 1. half: " << task1(v) << '\n';
     std::cout << "Answer to 2. half: " << task2(v) << '\n';
     return 0;
